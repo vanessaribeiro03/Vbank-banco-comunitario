@@ -1,15 +1,15 @@
 import { Client } from 'src/models/clients.model';
 
 export class Account {
-  public balance: number = 0;
-  public client: Client | undefined;
-  public type: 'current' | 'savings';
   public numberAccount: string;
+  public balance: number = 0;
+  public type: 'current' | 'savings';
+  public client: Client | undefined;
 
   constructor(client: Client, type: 'current' | 'savings') {
-    this.client = client;
-    this.type = type;
     this.numberAccount = randomNumber();
+    this.type = type;
+    this.client = client;
   }
 
   deposit(amount: number): void {

@@ -1,30 +1,31 @@
-import { Body, Controller, Get, HttpStatus, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { AccountService } from './account.service';
-import { CheckingAccount } from 'src/models/accounts/checking-account.model';
 
 @Controller('account')
 export class AccountController {
   constructor(private readonly accountService: AccountService) {}
 
-  @Post(':clientId')
+  @Post()
   createAccount(
-    @Param('clientId') clientId: string,
-    @Body('type') type: 'current' | 'savings',
+    @Body() body: { clienteId: string; type: 'current' | 'savings' },
   ) {
-    const account = this.accountService.createAccount(clientId, type);
+    const account = this.accountService.createAccount(
+      body.clienteId,
+      body.type,
+    );
+
     return {
       statusCode: HttpStatus.CREATED,
-      message: `Account ${type} created`,
-      numberAccount: account.numberAccount,
-      balance: account.balance,
-      overdraft:
-        type === 'current' ? (account as CheckingAccount).overdraft : undefined,
-      client: {
-        fullName: account.client?.fullName,
-        id: account.client?.id,
-        adress: account.client?.adress,
-        phoneNumber: account.client?.phoneNumber,
-      },
+      message: `Account ${body.type} createde`,
+      data: account,
     };
   }
 
@@ -38,12 +39,21 @@ export class AccountController {
   }
 
   @Get(':numberAccount')
-  getAccountById(@Param('numberAccount') numberAccount: string) {
-    const accounts = this.accountService.getAccountById(numberAccount);
+  getAccountByAccount(@Param('numberAccount') numberAccount: string) {
+    const accounts = this.accountService.getAccountByNumber(numberAccount);
 
     return {
       statusCode: HttpStatus.OK,
       data: accounts,
     };
+  }
+
+  @Patch('deposit/:numberAccount')
+  deposit(
+    @Param('numberAccount') numberAccount: string,
+    @Body('amount') amount: number,
+  ) {
+    console.log('[controller] o valor foi: ', amount);
+    return this.accountService.deposit(numberAccount, amount);
   }
 }

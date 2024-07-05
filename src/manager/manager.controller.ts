@@ -10,10 +10,15 @@ import {
 } from '@nestjs/common';
 import { ManagerService } from './manager.service';
 import { CreateManagerDto } from './dto/create-manager.dto';
+import { ClientsService } from 'src/clients/clients.service';
+import { Client } from 'src/models/clients.model';
 
 @Controller('manager')
 export class ManagerController {
-  constructor(private readonly managerService: ManagerService) {}
+  constructor(
+    private readonly managerService: ManagerService,
+    private readonly clientsService: ClientsService,
+  ) {}
 
   @Post('create')
   createManager(@Body() createManagerDto: CreateManagerDto) {
@@ -55,5 +60,12 @@ export class ManagerController {
       message: 'Manager successfully updated',
       data: manager,
     };
+  }
+
+  @Post('addClient')
+  addClient(@Body() body: { id: string; client: Client }) {
+    console.log('controller -> ', body.client);
+
+    this.managerService.addClient(body.id, body.client); // da erro aqui (o client retorna undefined)
   }
 }

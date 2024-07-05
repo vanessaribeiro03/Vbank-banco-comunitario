@@ -13,19 +13,13 @@ export class Client extends People {
     fullName: string,
     adress: string,
     phoneNumber: string,
-    accounts: Account[],
     monthlyIncome: number,
     manager?: Manager,
   ) {
     super(fullName);
     this.adress = adress;
     this.phoneNumber = phoneNumber;
-    this.accounts = accounts;
     this.monthlyIncome - monthlyIncome;
     this.manager = manager;
-  }
-
-  public openAccount(account: Account): void {
-    this.accounts.push(account);
   }
 }

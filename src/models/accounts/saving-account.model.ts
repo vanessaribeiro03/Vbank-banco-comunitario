@@ -6,7 +6,6 @@ export class SavingAccount extends Account {
 
   constructor(client: Client) {
     super(client, 'savings');
-    this.interestRate = 0.05;
   }
 
   calculateRate(): number {

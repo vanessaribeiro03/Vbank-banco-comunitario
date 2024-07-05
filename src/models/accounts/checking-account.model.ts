@@ -3,9 +3,11 @@ import { Account } from './account.model';
 
 export class CheckingAccount extends Account {
   public overdraft: number = 100.0;
+  public balanceTotal: number;
 
   constructor(client: Client) {
     super(client, 'current');
+    this.balanceTotal = this.balance + this.overdraft;
   }
 
   withdram(amount: number): void {

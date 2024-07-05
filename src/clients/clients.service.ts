@@ -8,16 +8,11 @@ export class ClientsService {
   private clients: Client[] = [];
 
   createClient(createClientDto: CreateClientDto): Client {
-    const { fullName, adress, phoneNumber, accounts, monthlyIncome } =
-      createClientDto;
+    const { fullName, adress, phoneNumber, monthlyIncome } = createClientDto;
 
-    const newClient = new Client(
-      fullName,
-      adress,
-      phoneNumber,
-      accounts,
-      monthlyIncome,
-    );
+    const newClient = new Client(fullName, adress, phoneNumber, monthlyIncome);
+
+    console.log('cliente criado: ', newClient);
 
     this.clients.push(newClient);
     return newClient;
