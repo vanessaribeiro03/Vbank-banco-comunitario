@@ -12,8 +12,6 @@ export class ClientsService {
 
     const newClient = new Client(fullName, adress, phoneNumber, monthlyIncome);
 
-    console.log('cliente criado: ', newClient);
-
     this.clients.push(newClient);
     return newClient;
   }

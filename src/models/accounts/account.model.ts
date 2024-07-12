@@ -1,15 +1,14 @@
-import { Client } from 'src/models/clients.model';
+import { AccountType } from 'src/enums/type-account.enum';
 
 export class Account {
   public numberAccount: string;
   public balance: number = 0;
-  public type: 'current' | 'savings';
-  public client: Client | undefined;
+  // public type: 'current' | 'savings';
+  public type: AccountType;
 
-  constructor(client: Client, type: 'current' | 'savings') {
+  constructor(type: AccountType) {
     this.numberAccount = randomNumber();
     this.type = type;
-    this.client = client;
   }
 
   deposit(amount: number): void {

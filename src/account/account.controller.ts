@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpStatus,
   Param,
@@ -8,23 +9,23 @@ import {
   Post,
 } from '@nestjs/common';
 import { AccountService } from './account.service';
+import { Account } from 'src/models/accounts/account.model';
+import { AccountType } from 'src/enums/type-account.enum';
 
 @Controller('account')
 export class AccountController {
   constructor(private readonly accountService: AccountService) {}
 
-  @Post()
+  @Post(':clientId')
   createAccount(
-    @Body() body: { clienteId: string; type: 'current' | 'savings' },
+    @Param('clientId') clientId: string,
+    @Body('type') type: AccountType,
   ) {
-    const account = this.accountService.createAccount(
-      body.clienteId,
-      body.type,
-    );
+    const account = this.accountService.createAccount(clientId, type);
 
     return {
       statusCode: HttpStatus.CREATED,
-      message: `Account ${body.type} createde`,
+      message: 'Account created successfully',
       data: account,
     };
   }
@@ -32,6 +33,7 @@ export class AccountController {
   @Get()
   getAllAccounts() {
     const accounts = this.accountService.getAllAccounts();
+
     return {
       statusCode: HttpStatus.OK,
       data: accounts,
@@ -39,7 +41,7 @@ export class AccountController {
   }
 
   @Get(':numberAccount')
-  getAccountByAccount(@Param('numberAccount') numberAccount: string) {
+  getAccountByNumber(@Param('numberAccount') numberAccount: string) {
     const accounts = this.accountService.getAccountByNumber(numberAccount);
 
     return {
@@ -52,8 +54,46 @@ export class AccountController {
   deposit(
     @Param('numberAccount') numberAccount: string,
     @Body('amount') amount: number,
-  ) {
-    console.log('[controller] o valor foi: ', amount);
+  ): Account {
     return this.accountService.deposit(numberAccount, amount);
+  }
+
+  @Patch('withdraw/:numberAccount')
+  withdraw(
+    @Param('numberAccount') numberAccount: string,
+    @Body('amount') amount: number,
+  ): Account {
+    return this.accountService.withdraw(numberAccount, amount);
+  }
+
+  @Patch('transfer/:originNumberAccount/:destinationNumberAccount')
+  transfer(
+    @Param('originNumberAccount') originNumberAccount: string,
+    @Param('destinationNumberAccount') destinationNumberAccount: string,
+    @Body('amount') amount: number,
+  ) {
+    this.accountService.transfer(
+      originNumberAccount,
+      destinationNumberAccount,
+      amount,
+    );
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Transfer successful',
+    };
+  }
+
+  @Delete()
+  closeAccount(
+    @Param('clientId') clientId: string,
+    @Param('numberAccount') numberAccount: string,
+  ) {
+    this.accountService.closeAccount(clientId, numberAccount);
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Account deleted.',
+    };
   }
 }

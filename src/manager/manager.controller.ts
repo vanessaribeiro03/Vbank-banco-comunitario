@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpException,
   HttpStatus,
@@ -10,15 +11,13 @@ import {
 } from '@nestjs/common';
 import { ManagerService } from './manager.service';
 import { CreateManagerDto } from './dto/create-manager.dto';
-import { ClientsService } from 'src/clients/clients.service';
-import { Client } from 'src/models/clients.model';
+
+import { CreateClientDto } from 'src/clients/dto/create-client.dto';
+import { AccountType } from 'src/enums/type-account.enum';
 
 @Controller('manager')
 export class ManagerController {
-  constructor(
-    private readonly managerService: ManagerService,
-    private readonly clientsService: ClientsService,
-  ) {}
+  constructor(private readonly managerService: ManagerService) {}
 
   @Post('create')
   createManager(@Body() createManagerDto: CreateManagerDto) {
@@ -62,10 +61,65 @@ export class ManagerController {
     };
   }
 
-  @Post('addClient')
-  addClient(@Body() body: { id: string; client: Client }) {
-    console.log('controller -> ', body.client);
+  @Post('addClient/:idManager')
+  addClient(
+    @Param('idManager') idManager: string,
+    @Body() createClientDto: CreateClientDto,
+  ) {
+    const client = this.managerService.addClient(idManager, createClientDto);
+    return {
+      statusCode: HttpStatus.CREATED,
+      message: 'Client created successfully',
+      data: client,
+    };
+  }
 
-    this.managerService.addClient(body.id, body.client); // da erro aqui (o client retorna undefined)
+  @Delete('removeClient/:idManager/:idClient')
+  removeClient(
+    @Param('idManager') idManager: string,
+    @Param('idClient') idClient: string,
+  ) {
+    this.managerService.removeClient(idManager, idClient);
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Client removed',
+    };
+  }
+
+  @Post('openAccount/:idManager/:idClient')
+  openAccountForClient(
+    @Param('idManager') idManager: string,
+    @Param('idClient') idClient: string,
+    @Body('type') type: AccountType,
+  ) {
+    const account = this.managerService.openAccountForClient(
+      idManager,
+      idClient,
+      type,
+    );
+
+    return {
+      statusCode: HttpStatus.CREATED,
+      message: 'Account opened successfully',
+      data: account,
+    };
+  }
+
+  @Delete('removeAccount/:idManager/:idClient/:numberAccount')
+  closeAccountForClient(
+    @Param('idManager') idManager: string,
+    @Param('idClient') idClient: string,
+    @Param('numberAccount') numberAccount: string,
+  ) {
+    this.managerService.closeAccountForClient(
+      idManager,
+      idClient,
+      numberAccount,
+    );
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Client account removed',
+    };
   }
 }
