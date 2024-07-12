@@ -1,9 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Account } from 'src/models/accounts/account.model';
 import { ClientsService } from 'src/clients/clients.service';
-import { CheckingAccount } from 'src/models/accounts/checking-account.model';
-import { SavingAccount } from 'src/models/accounts/saving-account.model';
 import { AccountType } from 'src/enums/type-account.enum';
+import { AccountFactory } from 'src/models/accounts/account.factory';
 
 @Injectable()
 export class AccountService {
@@ -17,14 +16,7 @@ export class AccountService {
       throw new Error('Client not found');
     }
 
-    let account: Account;
-    if (type === AccountType.CURRENT) {
-      account = new CheckingAccount();
-    } else if (type === AccountType.SAVINGS) {
-      account = new SavingAccount();
-    } else {
-      throw new BadRequestException('Invalid account type');
-    }
+    const account = AccountFactory.createAccount(type);
 
     this.accounts.push(account);
     client.openAccount(account);

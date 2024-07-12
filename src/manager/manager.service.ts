@@ -1,19 +1,20 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Manager } from 'src/models/manager.model';
 import { CreateManagerDto } from './dto/create-manager.dto';
 import { Client } from 'src/models/clients.model';
 import { CreateClientDto } from 'src/clients/dto/create-client.dto';
-import { AccountService } from 'src/account/account.service';
-import { Account } from 'src/models/accounts/account.model';
-import { CheckingAccount } from 'src/models/accounts/checking-account.model';
-import { SavingAccount } from 'src/models/accounts/saving-account.model';
+// import { AccountService } from 'src/account/account.service';
+// import { Account } from 'src/models/accounts/account.model';
+// import { CheckingAccount } from 'src/models/accounts/checking-account.model';
+// import { SavingAccount } from 'src/models/accounts/saving-account.model';
 import { AccountType } from 'src/enums/type-account.enum';
+import { AccountFactory } from 'src/models/accounts/account.factory';
 
 @Injectable()
 export class ManagerService {
   private managers: Manager[] = [];
 
-  constructor(private readonly accountService: AccountService) {}
+  // constructor(private readonly accountService: AccountService) {}
 
   createManager(createManagerDto: CreateManagerDto): Manager {
     const { fullName } = createManagerDto;
@@ -81,14 +82,16 @@ export class ManagerService {
       throw new Error('Client not found');
     }
 
-    let account: Account;
-    if (type === AccountType.CURRENT) {
-      account = new CheckingAccount();
-    } else if (type === AccountType.SAVINGS) {
-      account = new SavingAccount();
-    } else {
-      throw new BadRequestException('Invalid account type');
-    }
+    // let account: Account;
+    // if (type === AccountType.CURRENT) {
+    //   account = new CheckingAccount();
+    // } else if (type === AccountType.SAVINGS) {
+    //   account = new SavingAccount();
+    // } else {
+    //   throw new BadRequestException('Invalid account type');
+    // }
+
+    const account = AccountFactory.createAccount(type);
 
     manager.openAccount(client, account);
     return account;

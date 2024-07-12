@@ -3,7 +3,6 @@ import { AccountType } from 'src/enums/type-account.enum';
 export class Account {
   public numberAccount: string;
   public balance: number = 0;
-  // public type: 'current' | 'savings';
   public type: AccountType;
 
   constructor(type: AccountType) {
