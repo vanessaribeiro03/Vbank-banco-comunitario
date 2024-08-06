@@ -9,11 +9,11 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { ManagerService } from './manager.service';
-import { CreateManagerDto } from './dto/create-manager.dto';
+import { ManagerService } from 'src/domain/services/manager.service';
+import { CreateManagerDto } from 'src/application/dtos/manager/create-manager.dto';
 
-import { CreateClientDto } from 'src/clients/dto/create-client.dto';
-import { AccountType } from 'src/enums/type-account.enum';
+import { CreateClientDto } from 'src/application/dtos/client/create-client.dto';
+import { AccountType } from 'src/domain/enums/type-account.enum';
 
 @Controller('manager')
 export class ManagerController {

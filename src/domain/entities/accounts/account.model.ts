@@ -1,4 +1,4 @@
-import { AccountType } from 'src/enums/type-account.enum';
+import { AccountType } from 'src/domain/enums/type-account.enum';
 
 export class Account {
   public numberAccount: string;

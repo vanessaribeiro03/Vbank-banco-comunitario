@@ -8,9 +8,9 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { AccountService } from './account.service';
-import { Account } from 'src/models/accounts/account.model';
-import { AccountType } from 'src/enums/type-account.enum';
+import { AccountService } from '../../domain/services/account.service';
+import { Account } from 'src/domain/entities/accounts/account.model';
+import { AccountType } from 'src/domain/enums/type-account.enum';
 
 @Controller('account')
 export class AccountController {

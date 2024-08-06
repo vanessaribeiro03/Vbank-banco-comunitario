@@ -1,7 +1,7 @@
-import { AccountType } from 'src/enums/type-account.enum';
+import { AccountType } from 'src/domain/enums/type-account.enum';
 import { Account } from './account.model';
 import { CheckingAccount } from './checking-account.model';
-import { SavingAccount } from './saving-account.model';
+import { SavingAccount } from 'src/domain/entities/accounts/saving-account.model';
 
 export class AccountFactory {
   static createAccount(type: AccountType): Account {

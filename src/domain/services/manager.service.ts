@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { Manager } from 'src/models/manager.model';
-import { CreateManagerDto } from './dto/create-manager.dto';
-import { Client } from 'src/models/clients.model';
-import { CreateClientDto } from 'src/clients/dto/create-client.dto';
+import { Manager } from 'src/domain/entities/manager.model';
+import { CreateManagerDto } from '../../application/dtos/manager/create-manager.dto';
+import { Client } from 'src/domain/entities/clients.model';
+import { CreateClientDto } from 'src/application/dtos/client/create-client.dto';
 // import { AccountService } from 'src/account/account.service';
 // import { Account } from 'src/models/accounts/account.model';
 // import { CheckingAccount } from 'src/models/accounts/checking-account.model';
 // import { SavingAccount } from 'src/models/accounts/saving-account.model';
-import { AccountType } from 'src/enums/type-account.enum';
-import { AccountFactory } from 'src/models/accounts/account.factory';
+import { AccountType } from 'src/domain/enums/type-account.enum';
+import { AccountFactory } from 'src/domain/entities/accounts/account.factory';
 
 @Injectable()
 export class ManagerService {

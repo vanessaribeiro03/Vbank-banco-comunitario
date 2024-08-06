@@ -1,8 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { Account } from 'src/models/accounts/account.model';
-import { ClientsService } from 'src/clients/clients.service';
-import { AccountType } from 'src/enums/type-account.enum';
-import { AccountFactory } from 'src/models/accounts/account.factory';
+import { Account } from 'src/domain/entities/accounts/account.model';
+import { ClientsService } from 'src/domain/services/clients.service';
+import { AccountType } from 'src/domain/enums/type-account.enum';
+import { AccountFactory } from 'src/domain/entities/accounts/account.factory';
 
 @Injectable()
 export class AccountService {

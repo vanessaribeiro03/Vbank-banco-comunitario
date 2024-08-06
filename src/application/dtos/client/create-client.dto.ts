@@ -1,4 +1,4 @@
-import { Account } from 'src/models/accounts/account.model';
+import { Account } from 'src/domain/entities/accounts/account.model';
 
 export class CreateClientDto {
   fullName: string;

@@ -1,4 +1,4 @@
-import { Client } from 'src/models/clients.model';
+import { Client } from 'src/domain/entities/clients.model';
 
 import { v4 as uuidv4 } from 'uuid';
 import { Account } from './accounts/account.model';
