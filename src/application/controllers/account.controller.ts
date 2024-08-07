@@ -9,7 +9,7 @@ import {
   Post,
 } from '@nestjs/common';
 import { AccountService } from '../../domain/services/account.service';
-import { Account } from 'src/domain/entities/accounts/account.model';
+import { Account } from 'src/domain/entities/accounts/account.entity';
 import { AccountType } from 'src/domain/enums/type-account.enum';
 
 @Controller('account')

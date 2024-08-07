@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { Account } from 'src/domain/entities/accounts/account.model';
+import { Account } from 'src/domain/entities/accounts/account.entity';
 import { ClientsService } from 'src/domain/services/clients.service';
 import { AccountType } from 'src/domain/enums/type-account.enum';
 import { AccountFactory } from 'src/domain/entities/accounts/account.factory';
@@ -10,13 +10,13 @@ export class AccountService {
 
   constructor(private readonly clientsService: ClientsService) {}
 
-  createAccount(clienteId: string, type: AccountType): Account {
-    const client = this.clientsService.getClientById(clienteId);
+  createAccount(clientId: string, type: AccountType): Account {
+    const client = this.clientsService.getClientById(clientId);
     if (!client) {
       throw new Error('Client not found');
     }
 
-    const account = AccountFactory.createAccount(type);
+    const account = AccountFactory.createAccount(type, clientId);
 
     this.accounts.push(account);
     client.openAccount(account);

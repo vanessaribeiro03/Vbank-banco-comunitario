@@ -1,11 +1,11 @@
 import { AccountType } from 'src/domain/enums/type-account.enum';
-import { Account } from './account.model';
+import { Account } from './account.entity';
 
 export class SavingAccount extends Account {
   public interestRate: number;
 
-  constructor() {
-    super(AccountType.SAVINGS);
+  constructor(clientId: string) {
+    super(AccountType.SAVINGS, clientId);
   }
 
   calculateRate(): number {

@@ -1,20 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { Manager } from 'src/domain/entities/manager.model';
+import { Manager } from 'src/domain/entities/manager.entity';
 import { CreateManagerDto } from '../../application/dtos/manager/create-manager.dto';
-import { Client } from 'src/domain/entities/clients.model';
+import { Client } from 'src/domain/entities/clients.entity';
 import { CreateClientDto } from 'src/application/dtos/client/create-client.dto';
-// import { AccountService } from 'src/account/account.service';
-// import { Account } from 'src/models/accounts/account.model';
-// import { CheckingAccount } from 'src/models/accounts/checking-account.model';
-// import { SavingAccount } from 'src/models/accounts/saving-account.model';
 import { AccountType } from 'src/domain/enums/type-account.enum';
 import { AccountFactory } from 'src/domain/entities/accounts/account.factory';
 
 @Injectable()
 export class ManagerService {
   private managers: Manager[] = [];
-
-  // constructor(private readonly accountService: AccountService) {}
 
   createManager(createManagerDto: CreateManagerDto): Manager {
     const { fullName } = createManagerDto;
@@ -82,16 +76,7 @@ export class ManagerService {
       throw new Error('Client not found');
     }
 
-    // let account: Account;
-    // if (type === AccountType.CURRENT) {
-    //   account = new CheckingAccount();
-    // } else if (type === AccountType.SAVINGS) {
-    //   account = new SavingAccount();
-    // } else {
-    //   throw new BadRequestException('Invalid account type');
-    // }
-
-    const account = AccountFactory.createAccount(type);
+    const account = AccountFactory.createAccount(type, idClient);
 
     manager.openAccount(client, account);
     return account;

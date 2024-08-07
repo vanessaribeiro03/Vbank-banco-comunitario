@@ -4,10 +4,12 @@ export class Account {
   public numberAccount: string;
   public balance: number = 0;
   public type: AccountType;
+  public clientId: string;
 
-  constructor(type: AccountType) {
+  constructor(type: AccountType, clientId: string) {
     this.numberAccount = randomNumber();
     this.type = type;
+    this.clientId = clientId;
   }
 
   deposit(amount: number): void {
