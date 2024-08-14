@@ -1,7 +1,7 @@
 import {
   Body,
   Controller,
-  Delete,
+  // Delete,
   Get,
   HttpStatus,
   Param,
@@ -21,28 +21,17 @@ export class AccountController {
     @Param('clientId') clientId: string,
     @Body('type') type: AccountType,
   ) {
-    const account = this.accountService.createAccount(clientId, type);
-
-    return {
-      statusCode: HttpStatus.CREATED,
-      message: 'Account created successfully',
-      data: account,
-    };
+    return this.accountService.createAccount(clientId, type);
   }
 
   @Get()
   getAllAccounts() {
-    const accounts = this.accountService.getAllAccounts();
-
-    return {
-      statusCode: HttpStatus.OK,
-      data: accounts,
-    };
+    return this.accountService.getAllAccounts();
   }
 
   @Get(':numberAccount')
   getAccountByNumber(@Param('numberAccount') numberAccount: string) {
-    const accounts = this.accountService.getAccountByNumber(numberAccount);
+    const accounts = this.accountService.getAccountById(numberAccount);
 
     return {
       statusCode: HttpStatus.OK,
@@ -54,7 +43,7 @@ export class AccountController {
   deposit(
     @Param('numberAccount') numberAccount: string,
     @Body('amount') amount: number,
-  ): Account {
+  ): Promise<Account> {
     return this.accountService.deposit(numberAccount, amount);
   }
 
@@ -62,7 +51,7 @@ export class AccountController {
   withdraw(
     @Param('numberAccount') numberAccount: string,
     @Body('amount') amount: number,
-  ): Account {
+  ): Promise<Account> {
     return this.accountService.withdraw(numberAccount, amount);
   }
 
@@ -71,29 +60,29 @@ export class AccountController {
     @Param('originNumberAccount') originNumberAccount: string,
     @Param('destinationNumberAccount') destinationNumberAccount: string,
     @Body('amount') amount: number,
-  ) {
-    this.accountService.transfer(
+  ): Promise<Account> {
+    return this.accountService.transfer(
       originNumberAccount,
       destinationNumberAccount,
       amount,
     );
-
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Transfer successful',
-    };
   }
 
-  @Delete()
-  closeAccount(
-    @Param('clientId') clientId: string,
-    @Param('numberAccount') numberAccount: string,
-  ) {
-    this.accountService.closeAccount(clientId, numberAccount);
-
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Account deleted.',
-    };
+  @Get('transactions/:id')
+  getAccountTransactions(@Param('id') id: string) {
+    return this.accountService.getAccountTransactions(id);
   }
+
+  // @Delete()
+  // closeAccount(
+  //   @Param('clientId') clientId: string,
+  //   @Param('numberAccount') numberAccount: string,
+  // ) {
+  //   this.accountService.closeAccount(clientId, numberAccount);
+
+  //   return {
+  //     statusCode: HttpStatus.OK,
+  //     message: 'Account deleted.',
+  //   };
+  // }
 }

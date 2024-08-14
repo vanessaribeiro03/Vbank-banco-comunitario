@@ -1,43 +1,51 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Client } from '../entities/clients.entity';
 import { CreateClientDto } from '../../application/dtos/client/create-client.dto';
-import { UpdateClientDto } from '../../application/dtos/client/update-client.dto';
+import { IClientRepository } from '../interfaces/client.interface';
 
 @Injectable()
 export class ClientsService {
   private clients: Client[] = [];
 
-  createClient(createClientDto: CreateClientDto): Client {
+  constructor(
+    @Inject('IClientRepository')
+    private readonly clientRepository: IClientRepository,
+  ) {}
+
+  async createClient(createClientDto: CreateClientDto): Promise<Client> {
     const { fullName, adress, phoneNumber, monthlyIncome } = createClientDto;
 
     const newClient = new Client(fullName, adress, phoneNumber, monthlyIncome);
 
     this.clients.push(newClient);
-    return newClient;
+
+    return await this.clientRepository.save(newClient);
   }
 
-  getAllClients(): Client[] {
-    return this.clients;
+  async getAllClients(): Promise<Client[]> {
+    return await this.clientRepository.findAll();
   }
 
-  getClientById(id: string): Client {
-    return this.clients.find(client => client.id === id);
-  }
+  async getClientById(id: string): Promise<Client> {
+    const client = await this.clientRepository.findById(id);
 
-  updateClient(id: string, updates: UpdateClientDto): Client {
-    const client = this.getClientById(id);
     if (!client) {
-      return null;
+      throw new Error('User not found');
     }
 
-    const fields = ['fullName', 'adress', 'phoneNumber'];
-
-    Object.keys(updates).forEach(key => {
-      if (fields.includes(key)) {
-        client[key] = updates[key];
-      }
-    });
-
     return client;
+  }
+
+  async updateClient(
+    id: string,
+    createClient: CreateClientDto,
+  ): Promise<Client> {
+    const client = this.getClientById(id);
+
+    if (!client) {
+      throw new Error('User not found');
+    }
+
+    return await this.clientRepository.save(createClient);
   }
 }

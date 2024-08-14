@@ -1,111 +1,144 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Manager } from 'src/domain/entities/manager.entity';
 import { CreateManagerDto } from '../../application/dtos/manager/create-manager.dto';
 import { Client } from 'src/domain/entities/clients.entity';
 import { CreateClientDto } from 'src/application/dtos/client/create-client.dto';
 import { AccountType } from 'src/domain/enums/type-account.enum';
 import { AccountFactory } from 'src/domain/entities/accounts/account.factory';
+import { IManagerRepository } from '../interfaces/manager.interface';
+import { ClientRepository } from 'src/infrastructure/repository/client.repository';
+import { Account } from '../entities/accounts/account.entity';
+import { AccountRepository } from 'src/infrastructure/repository/account.repository';
 
 @Injectable()
 export class ManagerService {
-  private managers: Manager[] = [];
+  constructor(
+    @Inject('IManagerRepository')
+    private readonly managerRepository: IManagerRepository,
+    @Inject('IClientRepository')
+    private readonly clientRepository: ClientRepository,
+    @Inject('IAccountRepository')
+    private readonly accountRepository: AccountRepository,
+  ) {}
 
-  createManager(createManagerDto: CreateManagerDto): Manager {
+  async createManager(createManagerDto: CreateManagerDto): Promise<Manager> {
     const { fullName } = createManagerDto;
 
     const newManager = new Manager(fullName);
 
-    this.managers.push(newManager);
-    return newManager;
+    return await this.managerRepository.save(newManager);
   }
 
-  getAllManager(): Manager[] {
-    return this.managers;
+  async getAllManager(): Promise<Manager[]> {
+    return await this.managerRepository.findAll();
   }
 
-  getManagerById(id: string): Manager {
-    return this.managers.find(manager => manager.id === id);
+  async getManagerById(id: string): Promise<Manager> {
+    return await this.managerRepository.findById(id);
   }
 
-  updateManager(id: string, fullName: string): Manager {
-    const manager = this.getManagerById(id);
-    if (!manager) {
-      return null;
+  async updateManager(
+    id: string,
+    createManagerDto: CreateManagerDto,
+  ): Promise<Manager | null> {
+    const manager = await this.getManagerById(id);
+
+    if (manager) {
+      manager.fullName = createManagerDto.fullName;
+      return await this.managerRepository.save(manager);
     }
 
-    manager.fullName = fullName;
-
-    return manager;
+    return null;
   }
 
-  addClient(idManager: string, createClientDto: CreateClientDto): Client {
-    const manager = this.getManagerById(idManager);
+  async removeManager(id: string): Promise<boolean> {
+    const manager = await this.getManagerById(id);
+
+    if (!manager) {
+      throw new Error('Manager not found');
+    }
+
+    return await this.managerRepository.delete(id);
+  }
+
+  async addClient(
+    idManager: string,
+    createClientDto: CreateClientDto,
+  ): Promise<Client> {
+    const manager = await this.getManagerById(idManager);
     if (!manager) {
       throw new Error('Manager not found');
     }
 
     const { fullName, adress, phoneNumber, monthlyIncome } = createClientDto;
-    const newClient = new Client(fullName, adress, phoneNumber, monthlyIncome);
+    const newClient = new Client(
+      fullName,
+      adress,
+      phoneNumber,
+      monthlyIncome,
+      manager,
+    );
 
-    manager.addClients(newClient);
-    return newClient;
+    return await this.clientRepository.save(newClient);
   }
 
-  removeClient(idManager: string, idClient: string) {
-    const manager = this.getManagerById(idManager);
+  async removeClient(idManager: string, idClient: string): Promise<boolean> {
+    const manager = await this.getManagerById(idManager);
     if (!manager) {
       throw new Error('Manager not found');
     }
 
-    const client = manager.clients.find(c => c.id === idClient);
+    const client = await this.clientRepository.findById(idClient);
     if (!client) {
       throw new Error('Client not found');
     }
 
-    manager.removeClients(client);
+    await this.clientRepository.delete(client.id);
+    return true;
   }
 
-  openAccountForClient(idManager: string, idClient: string, type: AccountType) {
-    const manager = this.getManagerById(idManager);
+  async openAccountForClient(
+    idManager: string,
+    idClient: string,
+    type: AccountType,
+  ): Promise<Account> {
+    const manager = await this.getManagerById(idManager);
     if (!manager) {
       throw new Error('Manager not found');
     }
 
-    const client = manager.clients.find(c => c.id === idClient);
+    const client = await this.clientRepository.findById(idClient);
     if (!client) {
       throw new Error('Client not found');
     }
 
     const account = AccountFactory.createAccount(type, idClient);
 
-    manager.openAccount(client, account);
-    return account;
+    return await this.accountRepository.save(account);
   }
 
-  closeAccountForClient(
+  async closeAccountForClient(
     idManager: string,
     idClient: string,
-    numberAccount: string,
-  ) {
+    idAccount: string,
+  ): Promise<boolean> {
     const manager = this.getManagerById(idManager);
 
     if (!manager) {
       throw new Error('Manager not found');
     }
 
-    const client = manager.clients.find(c => c.id === idClient);
+    const client = await this.clientRepository.findById(idClient);
     if (!client) {
       throw new Error('Client not found');
     }
 
-    const account = client.accounts.find(
-      acc => acc.numberAccount === numberAccount,
-    );
+    const account = await this.accountRepository.findById(idAccount);
 
     if (!account) {
       throw new Error('Account not found');
     }
 
-    manager.closeAccount(client, account);
+    return await this.accountRepository.delete(idAccount);
   }
 }

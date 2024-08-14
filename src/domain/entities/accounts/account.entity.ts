@@ -1,13 +1,39 @@
 import { AccountType } from 'src/domain/enums/type-account.enum';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Client } from '../clients.entity';
+import { Transaction } from '../transactions.entity';
 
+@Entity('accounts')
 export class Account {
-  public numberAccount: string;
+  @PrimaryGeneratedColumn('uuid')
+  public id: string;
+
+  @Column()
   public balance: number = 0;
+
+  @Column()
   public type: AccountType;
+
+  @Column()
   public clientId: string;
 
+  @ManyToOne(() => Client, client => client.accounts)
+  @JoinColumn({ name: 'client_id' })
+  public client: Client;
+
+  @OneToMany(() => Transaction, transaction => transaction.account, {
+    cascade: true,
+  })
+  public transactions: Transaction[];
+
   constructor(type: AccountType, clientId: string) {
-    this.numberAccount = randomNumber();
     this.type = type;
     this.clientId = clientId;
   }
@@ -35,8 +61,4 @@ export class Account {
   getBalance(): number {
     return this.balance;
   }
-}
-
-function randomNumber(): string {
-  return Math.floor(Math.random() * 1000000000).toString();
 }

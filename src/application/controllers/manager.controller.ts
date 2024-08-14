@@ -3,8 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpException,
-  HttpStatus,
   Param,
   Post,
   Put,
@@ -21,44 +19,30 @@ export class ManagerController {
 
   @Post('create')
   createManager(@Body() createManagerDto: CreateManagerDto) {
-    const manager = this.managerService.createManager(createManagerDto);
-    return {
-      statusCode: HttpStatus.CREATED,
-      message: 'Manager create successfully',
-      data: manager,
-    };
+    return this.managerService.createManager(createManagerDto);
   }
 
   @Get()
   getAllManager() {
-    const manager = this.managerService.getAllManager();
-    return {
-      statusCode: HttpStatus.OK,
-      data: manager,
-    };
+    return this.managerService.getAllManager();
   }
 
   @Get(':id')
   getManagerById(@Param('id') id: string) {
-    const manager = this.managerService.getManagerById(id);
-    return {
-      statusCode: HttpStatus.OK,
-      data: manager,
-    };
+    return this.managerService.getManagerById(id);
   }
 
   @Put(':id')
-  updateManager(@Param('id') id: string, @Body() body: { fullName: string }) {
-    const manager = this.managerService.updateManager(id, body.fullName);
-    if (!manager) {
-      throw new HttpException('Manager not found', HttpStatus.NOT_FOUND);
-    }
+  updateManager(
+    @Param('id') id: string,
+    @Body() createManagerDto: CreateManagerDto,
+  ) {
+    return this.managerService.updateManager(id, createManagerDto);
+  }
 
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Manager successfully updated',
-      data: manager,
-    };
+  @Delete(':id')
+  removeManager(@Param('id') id: string) {
+    return this.managerService.removeManager(id);
   }
 
   @Post('addClient/:idManager')
@@ -66,12 +50,7 @@ export class ManagerController {
     @Param('idManager') idManager: string,
     @Body() createClientDto: CreateClientDto,
   ) {
-    const client = this.managerService.addClient(idManager, createClientDto);
-    return {
-      statusCode: HttpStatus.CREATED,
-      message: 'Client created successfully',
-      data: client,
-    };
+    return this.managerService.addClient(idManager, createClientDto);
   }
 
   @Delete('removeClient/:idManager/:idClient')
@@ -79,11 +58,7 @@ export class ManagerController {
     @Param('idManager') idManager: string,
     @Param('idClient') idClient: string,
   ) {
-    this.managerService.removeClient(idManager, idClient);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Client removed',
-    };
+    return this.managerService.removeClient(idManager, idClient);
   }
 
   @Post('openAccount/:idManager/:idClient')
@@ -92,17 +67,7 @@ export class ManagerController {
     @Param('idClient') idClient: string,
     @Body('type') type: AccountType,
   ) {
-    const account = this.managerService.openAccountForClient(
-      idManager,
-      idClient,
-      type,
-    );
-
-    return {
-      statusCode: HttpStatus.CREATED,
-      message: 'Account opened successfully',
-      data: account,
-    };
+    return this.managerService.openAccountForClient(idManager, idClient, type);
   }
 
   @Delete('removeAccount/:idManager/:idClient/:numberAccount')
@@ -111,15 +76,10 @@ export class ManagerController {
     @Param('idClient') idClient: string,
     @Param('numberAccount') numberAccount: string,
   ) {
-    this.managerService.closeAccountForClient(
+    return this.managerService.closeAccountForClient(
       idManager,
       idClient,
       numberAccount,
     );
-
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Client account removed',
-    };
   }
 }
